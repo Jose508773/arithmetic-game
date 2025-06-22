@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Integration Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .code-block {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 10px;
+            border-left: 4px solid #ffc107;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Ad Monetization Integration Guide</h1>
+    
+    <h2>📱 For Mobile Apps (AdMob)</h2>
+    
+    <div class="highlight">
+        <strong>Step 1:</strong> Sign up for Google AdMob at <a href="https://admob.google.com" target="_blank">admob.google.com</a>
+    </div>
+    
+    <div class="code-block">
+        <h3>Install AdMob SDK:</h3>
+        <pre>npm install react-native-google-mobile-ads</pre>
+    </div>
+    
+    <div class="code-block">
+        <h3>Initialize AdMob in your app:</h3>
+        <pre>
+import mobileAds from 'react-native-google-mobile-ads';
+
+// Initialize AdMob
+await mobileAds().initialize();
+
+// Load rewarded ad
+const rewarded = RewardedAd.createForAdRequest('ca-app-pub-xxx/yyy', {
+  requestNonPersonalizedAdsOnly: true,
+  keywords: ['game', 'education', 'math'],
+});
+
+// Load the ad
+await rewarded.load();
+
+// Show the ad
+await rewarded.show();
+        </pre>
+    </div>
+    
+    <h2>🌐 For Web Apps (AdSense)</h2>
+    
+    <div class="highlight">
+        <strong>Step 1:</strong> Sign up for Google AdSense at <a href="https://www.google.com/adsense" target="_blank">google.com/adsense</a>
+    </div>
+    
+    <div class="code-block">
+        <h3>Add AdSense code to your HTML:</h3>
+        <pre>
+&lt;script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX"&gt;&lt;/script&gt;
+        </pre>
+    </div>
+    
+    <div class="code-block">
+        <h3>Update adService.ts for real ads:</h3>
+        <pre>
+// Replace the mock ad service with real AdSense/AdMob integration
+class AdService {
+  private async loadRewardedAd(): Promise&lt;void&gt; {
+    // Real ad loading logic here
+    if (typeof window !== 'undefined' && window.gtag) {
+      // Use Google Tag Manager or direct AdSense
+      window.gtag('event', 'begin_checkout', {
+        'currency': 'USD',
+        'value': 0.01 // Minimum value for ad revenue
+      });
+    }
+  }
+  
+  private async displayAd(): Promise&lt;void&gt; {
+    // Show real ad
+    // Handle ad completion callbacks
+    // Track ad revenue
+  }
+}
+        </pre>
+    </div>
+    
+    <h2>💰 Revenue Optimization Tips</h2>
+    
+    <ul>
+        <li><strong>Ad Placement:</strong> Only show ads when players lose all lives (not intrusive)</li>
+        <li><strong>Ad Frequency:</strong> Limit to 1 ad per game session to maintain good UX</li>
+        <li><strong>Targeting:</strong> Use educational/gaming keywords for better CPM</li>
+        <li><strong>Testing:</strong> A/B test different ad placements and frequencies</li>
+        <li><strong>Analytics:</strong> Track ad performance and user retention</li>
+    </ul>
+    
+    <h2>🔧 Implementation Notes</h2>
+    
+    <div class="highlight">
+        <strong>Current Implementation:</strong> The app uses a mock ad service for development. 
+        Replace the mock service with real ad SDK calls when deploying to production.
+    </div>
+    
+    <div class="code-block">
+        <h3>Key Features Implemented:</h3>
+        <ul>
+            <li>✅ Ad loading and display logic</li>
+            <li>✅ Revival modal with ad integration</li>
+            <li>✅ Error handling for ad failures</li>
+            <li>✅ User-friendly ad experience</li>
+            <li>✅ Score preservation during revival</li>
+            <li>✅ Ad preloading for better UX</li>
+        </ul>
+    </div>
+    
+    <h2>📊 Expected Revenue</h2>
+    
+    <p>With this implementation, you can expect:</p>
+    <ul>
+        <li><strong>CPM:</strong> $2-8 for educational gaming content</li>
+        <li><strong>Ad View Rate:</strong> 60-80% (players want to continue)</li>
+        <li><strong>Daily Revenue:</strong> $10-50 with 1000 daily active users</li>
+        <li><strong>User Retention:</strong> Improved due to revival feature</li>
+    </ul>
+    
+    <div class="highlight">
+        <strong>Remember:</strong> Always prioritize user experience. The revival feature 
+        should feel like a helpful option, not a forced interruption.
+    </div>
+</body>
+</html> 

@@ -17,29 +17,116 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  FormControl,
-  FormLabel,
+  ModalFooter,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
 import { DifficultySelector } from '../components/DifficultySelector';
-import { FaPlay, FaTrophy, FaCog, FaStar, FaHeart, FaBrain, FaUser, FaSmile, FaRocket } from 'react-icons/fa';
+import { FaPlay, FaCog, FaStar, FaHeart, FaBrain, FaUserAstronaut, FaRocket, FaMoon, FaSun, FaSpaceShuttle } from 'react-icons/fa';
 import { keyframes } from '@emotion/react';
 import { motion } from 'framer-motion';
+import { playSound, unlockAudio } from '../utils/soundEffects';
 
 // Floating animation keyframes
 const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-18px); }
-  100% { transform: translateY(0px); }
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+`;
+
+const twinkle = keyframes`
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
 `;
 
 const TitleScreen: React.FC = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useGame();
-  const { highScore } = state;
+  const { highScore, playerName } = state;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [nickname, setNickname] = useState<string>('');
+  const [nickname, setNickname] = useState<string>(playerName || '');
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
+
+  // Initialize audio context on component mount
+  useEffect(() => {
+    console.log('🎵 Initializing audio context...');
+    unlockAudio();
+  }, []);
+
+  // Function to unlock audio with user interaction
+  const unlockAudioWithInteraction = async () => {
+    console.log('🔓 Unlocking audio with user interaction...');
+    setAudioUnlocked(true);
+    
+    try {
+      await unlockAudio();
+      
+      // Test sound immediately after user interaction
+      setTimeout(async () => {
+        console.log('🔊 Testing sound after user interaction...');
+        await playSound('button-click');
+      }, 100);
+    } catch (error) {
+      console.error('❌ Error unlocking audio:', error);
+    }
+  };
+
+  const handleStartGame = async () => {
+    console.log('🎮 Starting game...');
+    if (!audioUnlocked) {
+      await unlockAudioWithInteraction();
+    }
+    await playSound('button-click');
+    if (!playerName) {
+      onOpen(); // Open modal if no nickname is set
+      return;
+    }
+    navigate('/game');
+  };
+
+  const handleSettings = async () => {
+    console.log('⚙️ Opening settings...');
+    if (!audioUnlocked) {
+      await unlockAudioWithInteraction();
+    }
+    await playSound('button-click');
+    navigate('/settings');
+  };
+
+  const handleNicknameSubmit = async () => {
+    if (nickname.trim()) {
+      console.log('👤 Setting nickname...');
+      if (!audioUnlocked) {
+        await unlockAudioWithInteraction();
+      }
+      await playSound('button-click');
+      dispatch({ type: 'SET_PLAYER_NAME', payload: nickname.trim() });
+      onClose();
+      setNickname('');
+    }
+  };
+
+  const handleOpenModal = async () => {
+    console.log('📝 Opening nickname modal...');
+    if (!audioUnlocked) {
+      await unlockAudioWithInteraction();
+    }
+    await playSound('button-click');
+    onOpen();
+  };
+
+  const handleTestSounds = async () => {
+    console.log('🔊 Testing all sounds...');
+    if (!audioUnlocked) {
+      await unlockAudioWithInteraction();
+    }
+    
+    // Test sounds with delays
+    await playSound('button-click');
+    setTimeout(async () => await playSound('achievement'), 500);
+    setTimeout(async () => await playSound('level-up'), 1000);
+  };
 
   useEffect(() => {
     // Load nickname from localStorage on component mount
@@ -49,58 +136,52 @@ const TitleScreen: React.FC = () => {
     }
   }, []);
 
-  const handleStartGame = () => {
-    if (!nickname.trim()) {
-      onOpen(); // Open modal if no nickname is set
-      return;
-    }
-    navigate('/game');
-  };
-
-  const handleLeaderboard = () => {
-    navigate('/leaderboard');
-  };
-
-  const handleSettings = () => {
-    navigate('/settings');
-  };
-
-  const handleNicknameSubmit = () => {
-    if (nickname.trim()) {
-      localStorage.setItem('playerNickname', nickname.trim());
-      dispatch({ type: 'SET_PLAYER_NAME', payload: nickname.trim() });
-      onClose();
-    }
-  };
-
   return (
     <Box
       minH="100vh"
-      bgGradient="linear(to-b, #FFE66D, #FF6B8B)"
-      py={10}
+      bg="space.dark"
+      position="relative"
+      overflow="auto"
+      py={4}
       px={4}
       display="flex"
       alignItems="center"
       justifyContent="center"
-      position="relative"
     >
-      {/* Playful floating icons */}
-      <Icon as={FaStar} color="game.accent" fontSize="7xl" position="absolute" top="30px" left="40px" opacity={0.5} animation={`${float} 4s ease-in-out infinite`} zIndex={0} />
-      <Icon as={FaSmile} color="game.pink" fontSize="6xl" position="absolute" top="140px" right="60px" opacity={0.4} animation={`${float} 5s 1s ease-in-out infinite`} zIndex={0} />
-      <Icon as={FaRocket} color="game.secondary" fontSize="8xl" position="absolute" bottom="80px" left="100px" opacity={0.4} animation={`${float} 6s 0.5s ease-in-out infinite`} zIndex={0} />
-      <Icon as={FaHeart} color="game.purple" fontSize="5xl" position="absolute" top="200px" left="80px" opacity={0.3} animation={`${float} 7s 0.2s ease-in-out infinite`} zIndex={0} />
-      <Icon as={FaStar} color="game.orange" fontSize="6xl" position="absolute" bottom="120px" right="40px" opacity={0.4} animation={`${float} 5s 0.8s ease-in-out infinite`} zIndex={0} />
+      {/* Animated stars background */}
+      {[...Array(20)].map((_, i) => (
+        <Box
+          key={i}
+          position="fixed"
+          left={`${Math.random() * 100}%`}
+          top={`${Math.random() * 100}%`}
+          w="2px"
+          h="2px"
+          bg="space.star"
+          borderRadius="full"
+          animation={`${twinkle} ${2 + Math.random() * 3}s infinite`}
+          zIndex={0}
+        />
+      ))}
+
+      {/* Floating space elements */}
+      <Icon as={FaRocket} color="space.comet" fontSize="7xl" position="fixed" top="30px" left="40px" opacity={0.6} animation={`${float} 4s ease-in-out infinite`} zIndex={0} />
+      <Icon as={FaSpaceShuttle} color="space.planet" fontSize="6xl" position="fixed" top="140px" right="60px" opacity={0.5} animation={`${float} 5s 1s ease-in-out infinite`} zIndex={0} />
+      <Icon as={FaStar} color="space.star" fontSize="8xl" position="fixed" bottom="80px" left="100px" opacity={0.4} animation={`${float} 6s 0.5s ease-in-out infinite`} zIndex={0} />
+      <Icon as={FaMoon} color="space.cosmic" fontSize="5xl" position="fixed" top="200px" left="80px" opacity={0.5} animation={`${float} 7s 0.2s ease-in-out infinite`} zIndex={0} />
+      <Icon as={FaSun} color="space.accent" fontSize="6xl" position="fixed" bottom="120px" right="40px" opacity={0.4} animation={`${float} 5s 0.8s ease-in-out infinite`} zIndex={0} />
+
       {/* Main content */}
-      <Container maxW="container.md" position="relative" zIndex={1} mx="auto" textAlign="center">
-        <VStack spacing={8}>
+      <Container maxW="container.md" position="relative" zIndex={1} mx="auto" textAlign="center" py={2}>
+        <VStack spacing={4}>
           {/* Title Section */}
-          <VStack spacing={4}>
+          <VStack spacing={2}>
             <motion.h1
               animate={{ scale: [1, 1.08, 1] }}
               transition={{ repeat: Infinity, repeatType: 'reverse', duration: 2 }}
               style={{
-                fontSize: '3rem',
-                background: 'linear-gradient(to right, #9B59B6, #FF6B8B, #FFE66D)',
+                fontSize: '2rem',
+                background: 'linear-gradient(to right, #9B4DCA, #00FFFF, #FFD700)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 textAlign: 'center',
@@ -108,42 +189,69 @@ const TitleScreen: React.FC = () => {
                 letterSpacing: '0.1em',
                 fontWeight: 'bold',
                 margin: 0,
+                textShadow: '0 0 10px rgba(155, 77, 202, 0.5)',
               }}
             >
               Math Adventure!
             </motion.h1>
             <Text
-              fontSize="xl"
-              color="gray.600"
+              fontSize="md"
+              color="space.comet"
               textAlign="center"
               fontFamily="'Comic Sans MS', cursive"
             >
-              Let's make math fun! 🎮✨
+              Let's explore the universe of numbers! 🚀✨
             </Text>
-            {nickname && (
+            {playerName && (
               <Text
-                fontSize="lg"
-                color="blue.500"
+                fontSize="sm"
+                color="space.star"
                 fontWeight="bold"
                 display="flex"
                 alignItems="center"
                 gap={2}
               >
-                <FaUser /> Welcome, {nickname}!
+                <FaUserAstronaut /> Welcome, {playerName}!
+              </Text>
+            )}
+            {!audioUnlocked && (
+              <Text
+                fontSize="xs"
+                color="space.comet"
+                textAlign="center"
+                fontFamily="'Comic Sans MS', cursive"
+                bg="space.deep"
+                p={1}
+                rounded="md"
+                borderWidth="1px"
+                borderColor="space.nebula"
+              >
+                🔊 Click any button to enable sound effects!
               </Text>
             )}
           </VStack>
+
           {/* Main Content Box */}
           <Box
             w="full"
-            p={10}
-            bgGradient="linear(to-br, game.purple, game.pink, game.accent)"
+            p={6}
+            bg="space.deep"
             rounded="3xl"
             shadow="2xl"
-            borderWidth="4px"
-            borderColor="#fff"
+            borderWidth="2px"
+            borderColor="space.nebula"
             position="relative"
             overflow="hidden"
+            _before={{
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(circle at center, rgba(155, 77, 202, 0.1) 0%, transparent 70%)',
+              zIndex: 0,
+            }}
           >
             {/* Decorative Elements */}
             <Box
@@ -169,43 +277,44 @@ const TitleScreen: React.FC = () => {
               <Icon as={FaHeart} />
             </Box>
 
-            <VStack spacing={8}>
+            <VStack spacing={4}>
               {/* How to Play Section */}
               <Box w="full">
                 <Heading
-                  size="md"
-                  mb={4}
-                  color="blue.500"
+                  size="sm"
+                  mb={2}
+                  color="space.comet"
                   fontFamily="'Comic Sans MS', cursive"
                 >
                   How to Play:
                 </Heading>
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                  <VStack align="start" spacing={3}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
+                  <VStack align="start" spacing={1}>
                     <Flex align="center" gap={2}>
-                      <Icon as={FaBrain} color="purple.500" />
-                      <Text>Solve fun math problems!</Text>
+                      <Icon as={FaBrain} color="space.cosmic" />
+                      <Text color="space.star" fontSize="xs">Solve fun math problems!</Text>
                     </Flex>
                     <Flex align="center" gap={2}>
-                      <Icon as={FaStar} color="yellow.500" />
-                      <Text>Choose the right answer</Text>
+                      <Icon as={FaStar} color="space.star" />
+                      <Text color="space.star" fontSize="xs">Choose the right answer</Text>
                     </Flex>
-                    <Flex align="center" gap={2}>
-                      <Icon as={FaHeart} color="red.500" />
-                      <Text>Keep your hearts safe!</Text>
+                    <Flex align="flex-start" gap={2}>
+                      <Icon as={FaHeart} color="space.planet" mt={1} />
+                      <Text color="space.star" fontSize="xs">You have 3 lives - 3 wrong answers and it's game over!</Text>
                     </Flex>
                   </VStack>
                   <Box
-                    bg="blue.50"
-                    p={4}
+                    bg="space.deep"
+                    p={2}
                     rounded="xl"
                     borderWidth="2px"
-                    borderColor="blue.200"
+                    borderColor="space.nebula"
+                    boxShadow="0 0 15px rgba(155, 77, 202, 0.2)"
                   >
-                    <Text fontWeight="bold" color="blue.600" mb={2}>
+                    <Text fontWeight="bold" color="space.comet" mb={1} fontSize="xs">
                       Your Best Score:
                     </Text>
-                    <Text fontSize="3xl" color="blue.500" fontWeight="bold">
+                    <Text fontSize="xl" color="space.star" fontWeight="bold">
                       {highScore} points
                     </Text>
                   </Box>
@@ -215,9 +324,9 @@ const TitleScreen: React.FC = () => {
               {/* Difficulty Selector */}
               <Box w="full">
                 <Heading
-                  size="md"
-                  mb={4}
-                  color="purple.500"
+                  size="sm"
+                  mb={2}
+                  color="space.comet"
                   fontFamily="'Comic Sans MS', cursive"
                 >
                   Choose Your Level:
@@ -226,46 +335,32 @@ const TitleScreen: React.FC = () => {
               </Box>
 
               {/* Action Buttons */}
-              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} w="full">
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2} w="full">
                 <Button
                   leftIcon={<FaPlay />}
-                  colorScheme="blue"
-                  size="lg"
+                  colorScheme="purple"
+                  size="sm"
                   onClick={handleStartGame}
-                  bgGradient="linear(to-r, blue.400, blue.500)"
+                  bgGradient="linear(to-r, space.nebula, space.cosmic)"
                   _hover={{
-                    bgGradient: "linear(to-r, blue.500, blue.600)",
+                    bgGradient: "linear(to-r, space.cosmic, space.nebula)",
                     transform: "translateY(-2px)",
+                    boxShadow: "0 0 15px rgba(155, 77, 202, 0.3)"
                   }}
                   transition="all 0.2s"
                 >
                   Start Game
                 </Button>
-
-                <Button
-                  leftIcon={<FaTrophy />}
-                  colorScheme="purple"
-                  size="lg"
-                  onClick={handleLeaderboard}
-                  bgGradient="linear(to-r, purple.400, purple.500)"
-                  _hover={{
-                    bgGradient: "linear(to-r, purple.500, purple.600)",
-                    transform: "translateY(-2px)",
-                  }}
-                  transition="all 0.2s"
-                >
-                  Leaderboard
-                </Button>
-
                 <Button
                   leftIcon={<FaCog />}
-                  colorScheme="teal"
-                  size="lg"
+                  colorScheme="purple"
+                  size="sm"
                   onClick={handleSettings}
-                  bgGradient="linear(to-r, teal.400, teal.500)"
+                  bgGradient="linear(to-r, space.planet, space.cosmic)"
                   _hover={{
-                    bgGradient: "linear(to-r, teal.500, teal.600)",
+                    bgGradient: "linear(to-r, space.cosmic, space.planet)",
                     transform: "translateY(-2px)",
+                    boxShadow: "0 0 15px rgba(155, 77, 202, 0.3)"
                   }}
                   transition="all 0.2s"
                 >
@@ -273,59 +368,116 @@ const TitleScreen: React.FC = () => {
                 </Button>
               </SimpleGrid>
 
-              {!nickname && (
-                <Button
-                  leftIcon={<FaUser />}
-                  colorScheme="purple"
-                  size="lg"
-                  w="full"
-                  onClick={onOpen}
-                  bgGradient="linear(to-r, purple.400, purple.500)"
-                  _hover={{
-                    bgGradient: "linear(to-r, purple.500, purple.600)",
-                    transform: "translateY(-2px)",
-                  }}
-                  transition="all 0.2s"
-                  mt={4}
-                >
-                  Set Nickname
-                </Button>
-              )}
+              {/* Nickname Button */}
+              <Button
+                leftIcon={<FaUserAstronaut />}
+                colorScheme="purple"
+                size="sm"
+                onClick={handleOpenModal}
+                bgGradient="linear(to-r, space.nebula, space.cosmic)"
+                _hover={{
+                  bgGradient: "linear(to-r, space.cosmic, space.nebula)",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 0 15px rgba(155, 77, 202, 0.3)"
+                }}
+                transition="all 0.2s"
+                w="full"
+                maxW="300px"
+              >
+                {playerName ? `Change Nickname: ${playerName}` : 'Set Your Nickname'}
+              </Button>
+
+              {/* Test Sound Button (for debugging) */}
+              <Button
+                colorScheme="teal"
+                size="xs"
+                onClick={handleTestSounds}
+                bgGradient="linear(to-r, teal.400, teal.600)"
+                _hover={{
+                  bgGradient: "linear(to-r, teal.600, teal.400)",
+                  transform: "translateY(-2px)",
+                }}
+                transition="all 0.2s"
+                w="full"
+                maxW="200px"
+              >
+                {audioUnlocked ? 'Test Sounds 🔊' : 'Enable Sounds 🔊'}
+              </Button>
             </VStack>
           </Box>
         </VStack>
       </Container>
 
       {/* Nickname Modal */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Enter Your Nickname</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl>
-              <FormLabel>Nickname</FormLabel>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay backdropFilter="blur(10px)" />
+        <ModalContent
+          bg="space.deep"
+          borderWidth="2px"
+          borderColor="space.nebula"
+          rounded="3xl"
+          p={6}
+          position="relative"
+          overflow="hidden"
+          _before={{
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at center, rgba(155, 77, 202, 0.1) 0%, transparent 70%)',
+            zIndex: 0,
+          }}
+        >
+          <ModalHeader
+            color="space.star"
+            fontFamily="'Comic Sans MS', cursive"
+            textAlign="center"
+            fontSize="2xl"
+            textShadow="0 0 10px rgba(155, 77, 202, 0.5)"
+          >
+            {playerName ? 'Change Your Nickname' : 'Choose Your Nickname'}
+          </ModalHeader>
+          <ModalCloseButton color="space.comet" />
+          <ModalBody>
+            <VStack spacing={6}>
+              <Text color="space.comet" textAlign="center" fontSize="lg">
+                {playerName 
+                  ? "Enter a new nickname to continue your space adventure!"
+                  : "Enter your nickname to start your space adventure!"}
+              </Text>
               <Input
                 placeholder="Enter your nickname"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleNicknameSubmit();
-                  }
-                }}
+                size="lg"
+                bg="space.dark"
+                borderColor="space.nebula"
+                color="space.star"
+                _hover={{ borderColor: "space.comet" }}
+                _focus={{ borderColor: "space.star", boxShadow: "0 0 0 1px var(--chakra-colors-space-star)" }}
+                fontFamily="'Comic Sans MS', cursive"
               />
-            </FormControl>
+            </VStack>
+          </ModalBody>
+          <ModalFooter justifyContent="center">
             <Button
-              colorScheme="blue"
-              mr={3}
-              mt={4}
+              colorScheme="purple"
+              size="lg"
               onClick={handleNicknameSubmit}
               isDisabled={!nickname.trim()}
+              bgGradient="linear(to-r, space.nebula, space.cosmic)"
+              _hover={{
+                bgGradient: "linear(to-r, space.cosmic, space.nebula)",
+                transform: "translateY(-2px)",
+                boxShadow: "0 0 15px rgba(155, 77, 202, 0.3)"
+              }}
+              transition="all 0.2s"
             >
-              Save
+              {playerName ? 'Update Nickname' : 'Start Adventure'}
             </Button>
-          </ModalBody>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>

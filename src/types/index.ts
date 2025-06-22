@@ -6,6 +6,8 @@ export interface Question {
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
+export type Difficulty = 'easy' | 'medium' | 'hard';
+
 export interface Achievement {
   id: string;
   title: string;
@@ -45,7 +47,8 @@ export type GameAction =
   | { type: 'UNLOCK_ACHIEVEMENT'; payload: string }
   | { type: 'SET_PLAYER_NAME'; payload: string }
   | { type: 'SET_PLAYER_AVATAR'; payload: string }
-  | { type: 'SET_THEME'; payload: string };
+  | { type: 'SET_THEME'; payload: string }
+  | { type: 'REVIVE_PLAYER' };
 
 export interface GameContextType {
   state: GameState;

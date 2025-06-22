@@ -2,31 +2,27 @@ import { extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({
   colors: {
-    brand: {
-      50: '#f0f9ff',
-      100: '#e0f2fe',
-      200: '#bae6fd',
-      300: '#7dd3fc',
-      400: '#38bdf8',
-      500: '#0ea5e9',
-      600: '#0284c7',
-      700: '#0369a1',
-      800: '#075985',
-      900: '#0c4a6e',
+    space: {
+      dark: '#0B0B1F', // Deep space background
+      deep: '#1A1B3D', // Darker space elements
+      nebula: '#4B2E83', // Purple nebula
+      star: '#FFD700', // Bright star color
+      comet: '#00FFFF', // Bright comet trail
+      planet: '#FF6B6B', // Planet color
+      cosmic: '#9B4DCA', // Cosmic purple
     },
     game: {
-      primary: '#FF6B6B',    // Vibrant coral
-      secondary: '#4ECDC4',  // Turquoise
-      accent: '#FFE66D',     // Bright yellow
-      success: '#7ED321',    // Bright green
-      error: '#FF4B4B',      // Bright red
-      background: '#F7F9FC', // Light blue-gray
-      surface: '#FFFFFF',
-      text: '#2C3E50',
-      purple: '#9B59B6',     // Bright purple
-      orange: '#FF9F43',     // Bright orange
-      pink: '#FF6B8B',       // Bright pink
-    }
+      primary: '#4B2E83', // Deep space purple
+      secondary: '#00FFFF', // Bright comet blue
+      accent: '#FFD700', // Star gold
+      success: '#00FF9D', // Bright success
+      error: '#FF6B6B', // Planet red
+      warning: '#FFD700', // Star gold
+      info: '#00FFFF', // Comet blue
+      purple: '#9B4DCA', // Cosmic purple
+      pink: '#FF6B8B', // Space pink
+      orange: '#FFA500', // Star orange
+    },
   },
   fonts: {
     heading: '"Comic Sans MS", cursive',
@@ -36,28 +32,25 @@ const theme = extendTheme({
     Button: {
       baseStyle: {
         fontWeight: 'bold',
-        borderRadius: '2xl',
-        transition: 'all 0.2s',
+        borderRadius: 'xl',
         _hover: {
-          transform: 'scale(1.08) rotate(-2deg)',
+          transform: 'translateY(-2px)',
           boxShadow: 'lg',
         },
       },
       variants: {
         solid: {
-          bg: 'game.primary',
+          bg: 'space.nebula',
           color: 'white',
           _hover: {
-            bg: 'game.secondary',
-            opacity: 0.95,
+            bg: 'space.cosmic',
           },
         },
         outline: {
-          borderColor: 'game.primary',
-          color: 'game.primary',
+          borderColor: 'space.comet',
+          color: 'space.comet',
           _hover: {
-            bg: 'game.accent',
-            color: 'white',
+            bg: 'space.deep',
           },
         },
       },
@@ -65,25 +58,21 @@ const theme = extendTheme({
     Card: {
       baseStyle: {
         container: {
-          borderRadius: '2xl',
-          boxShadow: '2xl',
-          transition: 'all 0.3s',
-          _hover: {
-            transform: 'scale(1.03) rotate(1deg)',
-            boxShadow: '3xl',
-          },
+          bg: 'space.deep',
+          borderRadius: 'xl',
+          borderColor: 'space.nebula',
+          borderWidth: '2px',
+          boxShadow: '0 0 20px rgba(75, 46, 131, 0.3)',
         },
       },
     },
     Progress: {
       baseStyle: {
         track: {
-          borderRadius: 'full',
-          bg: 'game.pink',
+          bg: 'space.dark',
         },
         filledTrack: {
-          borderRadius: 'full',
-          transition: 'all 0.3s',
+          bg: 'space.comet',
         },
       },
     },
@@ -91,8 +80,9 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: 'game.background',
-        color: 'game.text',
+        bg: 'space.dark',
+        color: 'white',
+        backgroundImage: 'radial-gradient(circle at center, #1A1B3D 0%, #0B0B1F 100%)',
       },
     },
   },
