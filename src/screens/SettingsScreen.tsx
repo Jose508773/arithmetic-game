@@ -10,11 +10,20 @@ import {
   useToast,
   Container,
   Icon,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { useRef } from 'react';
 import { useGame } from '../context/useGame';
-import { FaHome, FaCog, FaStar, FaRocket, FaSpaceShuttle, FaMoon, FaSun } from 'react-icons/fa';
+import { FaHome, FaCog, FaStar, FaRocket, FaSpaceShuttle, FaMoon, FaSun, FaTrash } from 'react-icons/fa';
 import { playSound } from '../utils/soundEffects';
+import { clearUserData } from '../utils/userSession';
 import { keyframes } from '@emotion/react';
 
 // Floating animation keyframes
@@ -35,6 +44,8 @@ const SettingsScreen: React.FC = () => {
   const toast = useToast();
   const { state, dispatch } = useGame();
   const { soundEnabled, musicEnabled } = state;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const handleToggleSound = () => {
     playSound('button-click');
@@ -61,6 +72,45 @@ const SettingsScreen: React.FC = () => {
   const handleGoHome = () => {
     playSound('button-click');
     navigate('/');
+  };
+
+  const handleResetProgress = () => {
+    playSound('button-click');
+    onOpen();
+  };
+
+  const confirmResetProgress = () => {
+    try {
+      clearUserData();
+      
+      // Reset game state
+      dispatch({ type: 'RESET_GAME' });
+      
+      toast({
+        title: 'Progress Reset!',
+        description: 'All your progress has been cleared. You can start fresh!',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      
+      onClose();
+      
+      // Navigate back to home after a short delay
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Error resetting progress:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reset progress. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -164,23 +214,102 @@ const SettingsScreen: React.FC = () => {
             </VStack>
           </Box>
 
-          <Button
-            leftIcon={<FaHome />}
-            colorScheme="purple"
-            size="lg"
-            onClick={handleGoHome}
-            bgGradient="linear(to-r, space.nebula, space.cosmic)"
-            _hover={{
-              bgGradient: "linear(to-r, space.cosmic, space.nebula)",
-              transform: "translateY(-2px)",
-              boxShadow: "0 0 15px rgba(155, 77, 202, 0.3)"
-            }}
-            transition="all 0.2s"
-          >
-            Back to Home
-          </Button>
+          <VStack spacing={4} w="full">
+            <Button
+              leftIcon={<FaHome />}
+              colorScheme="purple"
+              size="lg"
+              onClick={handleGoHome}
+              bgGradient="linear(to-r, space.nebula, space.cosmic)"
+              _hover={{
+                bgGradient: "linear(to-r, space.cosmic, space.nebula)",
+                transform: "translateY(-2px)",
+                boxShadow: "0 0 15px rgba(155, 77, 202, 0.3)"
+              }}
+              transition="all 0.2s"
+              w="full"
+            >
+              Back to Home
+            </Button>
+
+            <Button
+              leftIcon={<FaTrash />}
+              colorScheme="red"
+              size="lg"
+              onClick={handleResetProgress}
+              bgGradient="linear(to-r, red.500, red.600)"
+              _hover={{
+                bgGradient: "linear(to-r, red.600, red.500)",
+                transform: "translateY(-2px)",
+                boxShadow: "0 0 15px rgba(220, 38, 38, 0.3)"
+              }}
+              transition="all 0.2s"
+              w="full"
+            >
+              Reset All Progress
+            </Button>
+          </VStack>
         </VStack>
       </Container>
+
+      {/* Reset Progress Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent
+            bg="space.deep"
+            borderWidth="2px"
+            borderColor="space.nebula"
+            rounded="3xl"
+          >
+            <AlertDialogHeader
+              color="space.star"
+              fontFamily="'Comic Sans MS', cursive"
+            >
+              Reset All Progress?
+            </AlertDialogHeader>
+
+            <AlertDialogBody color="space.comet">
+              This will permanently delete all your:
+              <br />• Total score
+              <br />• High score
+              <br />• Purchased shop items
+              <br />• Achievements
+              <br />• Player nickname
+              <br /><br />
+              This action cannot be undone!
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                ref={cancelRef}
+                onClick={onClose}
+                colorScheme="purple"
+                bgGradient="linear(to-r, space.nebula, space.cosmic)"
+                _hover={{
+                  bgGradient: "linear(to-r, space.cosmic, space.nebula)",
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={confirmResetProgress}
+                ml={3}
+                bgGradient="linear(to-r, red.500, red.600)"
+                _hover={{
+                  bgGradient: "linear(to-r, red.600, red.500)",
+                }}
+              >
+                Reset Everything
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 };

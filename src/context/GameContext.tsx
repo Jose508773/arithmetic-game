@@ -1,5 +1,6 @@
 import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
 import { GameState, GameContextType, GameAction, Achievement, ShopItem } from '../types/index';
+import { getUserData, setUserData } from '../utils/userSession';
 
 const initialAchievements: Achievement[] = [
   {
@@ -88,11 +89,8 @@ const initialShopItems: ShopItem[] = [
 // Load high score from localStorage
 const loadHighScore = (): number => {
   try {
-    if (typeof window !== 'undefined') {
-      const savedHighScore = localStorage.getItem('gameHighScore');
-      return savedHighScore ? parseInt(savedHighScore, 10) : 0;
-    }
-    return 0;
+    const savedHighScore = getUserData<number>('highScore');
+    return savedHighScore || 0;
   } catch (error) {
     console.error('Error loading high score:', error);
     return 0;
@@ -102,11 +100,8 @@ const loadHighScore = (): number => {
 // Load total score from localStorage
 const loadTotalScore = (): number => {
   try {
-    if (typeof window !== 'undefined') {
-      const savedTotalScore = localStorage.getItem('gameTotalScore');
-      return savedTotalScore ? parseInt(savedTotalScore, 10) : 0;
-    }
-    return 0;
+    const savedTotalScore = getUserData<number>('totalScore');
+    return savedTotalScore || 0;
   } catch (error) {
     console.error('Error loading total score:', error);
     return 0;
@@ -116,16 +111,13 @@ const loadTotalScore = (): number => {
 // Load shop items from localStorage
 const loadShopItems = (): ShopItem[] => {
   try {
-    if (typeof window !== 'undefined') {
-      const savedShopItems = localStorage.getItem('gameShopItems');
-      if (savedShopItems) {
-        const parsed = JSON.parse(savedShopItems);
-        // Merge with initial items to ensure all items exist
-        return initialShopItems.map(item => {
-          const saved = parsed.find((savedItem: ShopItem) => savedItem.id === item.id);
-          return saved ? { ...item, ...saved } : item;
-        });
-      }
+    const savedShopItems = getUserData<ShopItem[]>('shopItems');
+    if (savedShopItems) {
+      // Merge with initial items to ensure all items exist
+      return initialShopItems.map(item => {
+        const saved = savedShopItems.find((savedItem: ShopItem) => savedItem.id === item.id);
+        return saved ? { ...item, ...saved } : item;
+      });
     }
     return initialShopItems;
   } catch (error) {
@@ -137,9 +129,7 @@ const loadShopItems = (): ShopItem[] => {
 // Save high score to localStorage
 const saveHighScore = (highScore: number): void => {
   try {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gameHighScore', highScore.toString());
-    }
+    setUserData('highScore', highScore);
   } catch (error) {
     console.error('Error saving high score:', error);
   }
@@ -148,9 +138,7 @@ const saveHighScore = (highScore: number): void => {
 // Save total score to localStorage
 const saveTotalScore = (totalScore: number): void => {
   try {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gameTotalScore', totalScore.toString());
-    }
+    setUserData('totalScore', totalScore);
   } catch (error) {
     console.error('Error saving total score:', error);
   }
@@ -159,9 +147,7 @@ const saveTotalScore = (totalScore: number): void => {
 // Save shop items to localStorage
 const saveShopItems = (shopItems: ShopItem[]): void => {
   try {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gameShopItems', JSON.stringify(shopItems));
-    }
+    setUserData('shopItems', shopItems);
   } catch (error) {
     console.error('Error saving shop items:', error);
   }
@@ -349,17 +335,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Load player name and avatar from localStorage on mount
   useEffect(() => {
     try {
-      if (typeof window !== 'undefined') {
-        const savedPlayerName = localStorage.getItem('playerNickname');
-        const savedPlayerAvatar = localStorage.getItem('playerAvatar');
-        
-        if (savedPlayerName) {
-          dispatch({ type: 'SET_PLAYER_NAME', payload: savedPlayerName });
-        }
-        
-        if (savedPlayerAvatar) {
-          dispatch({ type: 'SET_PLAYER_AVATAR', payload: savedPlayerAvatar });
-        }
+      const savedPlayerName = getUserData<string>('playerNickname');
+      const savedPlayerAvatar = getUserData<string>('playerAvatar');
+      
+      if (savedPlayerName) {
+        dispatch({ type: 'SET_PLAYER_NAME', payload: savedPlayerName });
+      }
+      
+      if (savedPlayerAvatar) {
+        dispatch({ type: 'SET_PLAYER_AVATAR', payload: savedPlayerAvatar });
       }
     } catch (error) {
       console.error('Error loading player data:', error);
