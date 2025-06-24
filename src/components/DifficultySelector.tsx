@@ -6,8 +6,8 @@ import {
   RadioGroup,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useGame } from '../context/GameContext';
-import { Difficulty } from '../types';
+import { useGame } from '../context/useGame';
+import { Difficulty } from '../types/index';
 
 export const DifficultySelector: React.FC = () => {
   const { state, dispatch } = useGame();

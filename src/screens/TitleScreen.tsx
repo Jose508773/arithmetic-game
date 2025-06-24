@@ -18,11 +18,13 @@ import {
   ModalCloseButton,
   useDisclosure,
   ModalFooter,
+  HStack,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { useGame } from '../context/GameContext';
+import { useGame } from '../context/useGame';
 import { DifficultySelector } from '../components/DifficultySelector';
-import { FaPlay, FaCog, FaStar, FaHeart, FaBrain, FaUserAstronaut, FaRocket, FaMoon, FaSun, FaSpaceShuttle } from 'react-icons/fa';
+import { Shop } from '../components/Shop';
+import { FaPlay, FaCog, FaStar, FaHeart, FaBrain, FaUserAstronaut, FaRocket, FaMoon, FaSun, FaSpaceShuttle, FaStore, FaCoins } from 'react-icons/fa';
 import { keyframes } from '@emotion/react';
 import { motion } from 'framer-motion';
 import { playSound, unlockAudio } from '../utils/soundEffects';
@@ -43,8 +45,9 @@ const twinkle = keyframes`
 const TitleScreen: React.FC = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useGame();
-  const { highScore, playerName } = state;
+  const { highScore, playerName, totalScore } = state;
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isShopOpen, onOpen: onShopOpen, onClose: onShopClose } = useDisclosure();
   const [nickname, setNickname] = useState<string>(playerName || '');
   const [audioUnlocked, setAudioUnlocked] = useState(false);
 
@@ -126,6 +129,15 @@ const TitleScreen: React.FC = () => {
     await playSound('button-click');
     setTimeout(async () => await playSound('achievement'), 500);
     setTimeout(async () => await playSound('level-up'), 1000);
+  };
+
+  const handleShop = async () => {
+    console.log('🛒 Opening shop...');
+    if (!audioUnlocked) {
+      await unlockAudioWithInteraction();
+    }
+    await playSound('button-click');
+    onShopOpen();
   };
 
   useEffect(() => {
@@ -321,6 +333,30 @@ const TitleScreen: React.FC = () => {
                 </SimpleGrid>
               </Box>
 
+              {/* Total Score Display */}
+              <Box
+                bg="space.deep"
+                p={3}
+                rounded="xl"
+                borderWidth="2px"
+                borderColor="space.nebula"
+                boxShadow="0 0 15px rgba(155, 77, 202, 0.2)"
+                w="full"
+              >
+                <HStack justify="center" spacing={2} mb={1}>
+                  <Icon as={FaCoins} color="space.accent" />
+                  <Text fontWeight="bold" color="space.comet" fontSize="sm">
+                    Total Score:
+                  </Text>
+                </HStack>
+                <Text fontSize="2xl" color="space.star" fontWeight="bold" textAlign="center">
+                  {totalScore} points
+                </Text>
+                <Text fontSize="xs" color="space.comet" textAlign="center">
+                  Use these points to buy items in the shop!
+                </Text>
+              </Box>
+
               {/* Difficulty Selector */}
               <Box w="full">
                 <Heading
@@ -352,21 +388,40 @@ const TitleScreen: React.FC = () => {
                   Start Game
                 </Button>
                 <Button
-                  leftIcon={<FaCog />}
+                  leftIcon={<FaStore />}
                   colorScheme="purple"
                   size="sm"
-                  onClick={handleSettings}
-                  bgGradient="linear(to-r, space.planet, space.cosmic)"
+                  onClick={handleShop}
+                  bgGradient="linear(to-r, space.nebula, space.cosmic)"
                   _hover={{
-                    bgGradient: "linear(to-r, space.cosmic, space.planet)",
+                    bgGradient: "linear(to-r, space.cosmic, space.nebula)",
                     transform: "translateY(-2px)",
                     boxShadow: "0 0 15px rgba(155, 77, 202, 0.3)"
                   }}
                   transition="all 0.2s"
                 >
-                  Settings
+                  Shop
                 </Button>
               </SimpleGrid>
+
+              {/* Settings Button */}
+              <Button
+                leftIcon={<FaCog />}
+                colorScheme="purple"
+                size="sm"
+                onClick={handleSettings}
+                bgGradient="linear(to-r, space.planet, space.cosmic)"
+                _hover={{
+                  bgGradient: "linear(to-r, space.cosmic, space.planet)",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 0 15px rgba(155, 77, 202, 0.3)"
+                }}
+                transition="all 0.2s"
+                w="full"
+                maxW="300px"
+              >
+                Settings
+              </Button>
 
               {/* Nickname Button */}
               <Button
@@ -480,6 +535,9 @@ const TitleScreen: React.FC = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      {/* Shop Modal */}
+      <Shop isOpen={isShopOpen} onClose={onShopClose} />
     </Box>
   );
 };

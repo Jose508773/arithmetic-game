@@ -10,7 +10,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { useGame } from '../context/GameContext';
+import { useGame } from '../context/useGame';
 import { FaHome, FaRedo, FaTrophy, FaStar, FaRocket, FaSpaceShuttle, FaMoon, FaSun } from 'react-icons/fa';
 import { playSound } from '../utils/soundEffects';
 import { keyframes } from '@emotion/react';

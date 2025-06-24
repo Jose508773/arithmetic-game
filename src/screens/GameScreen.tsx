@@ -18,9 +18,10 @@ import {
   Spinner,
   Alert,
   AlertIcon,
+  useToast,
 } from '@chakra-ui/react';
 import { FaHome, FaHeart, FaStar, FaRocket, FaSpaceShuttle, FaMoon, FaSun, FaPlay } from 'react-icons/fa';
-import { useGame } from '../context/GameContext';
+import { useGame } from '../context/useGame';
 import { generateProblem, checkAnswer } from '../utils/gameLogic';
 import { playSound, stopSound, setSoundEnabled } from '../utils/soundEffects';
 import { motion } from 'framer-motion';
@@ -50,6 +51,7 @@ const GameScreen: React.FC = () => {
   const [isRevivalModalOpen, setIsRevivalModalOpen] = useState(false);
   const [isAdLoading, setIsAdLoading] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
+  const toast = useToast();
 
   const handleAnswer = useCallback(async (selectedAnswer: number) => {
     if (!state.currentQuestion) return;
@@ -60,19 +62,60 @@ const GameScreen: React.FC = () => {
 
     if (isCorrect) {
       dispatch({ type: 'INCREMENT_SCORE' });
+      
+      // Play sound for every correct answer
+      await playSound('button-click');
+      
+      // Fun congratulatory messages based on score
+      const messages = [
+        '🎉 Awesome job!',
+        '🌟 Brilliant!',
+        '🚀 You are on fire!',
+        '⭐ Super smart!',
+        '💫 Amazing work!',
+        '🎊 Fantastic!',
+        '🔥 You are unstoppable!',
+        '✨ Perfect answer!',
+        '🎯 Bullseye!',
+        '💎 Diamond thinking!'
+      ];
+      
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+      
+      // Special messages for milestones
+      let specialMessage = '';
       if (state.score === 0) {
+        specialMessage = '🎉 First correct answer! You are getting started!';
         dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: 'first_game' });
         await playSound('achievement');
-      }
-      if (state.score === 99) {
+      } else if (state.score === 9) {
+        specialMessage = '🎊 Double digits! You are becoming a math wizard!';
+      } else if (state.score === 24) {
+        specialMessage = '🏆 Quarter century! You are absolutely crushing it!';
+      } else if (state.score === 49) {
+        specialMessage = '🌟 Halfway to 100! You are a math genius!';
+      } else if (state.score === 99) {
+        specialMessage = '🎊 Almost at 100! You are incredible!';
         dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: 'high_scorer' });
         await playSound('achievement');
-      }
-      // Confetti on level up or high score
-      if ((state.score + 1) % 10 === 0) {
+      } else if ((state.score + 1) % 10 === 0) {
+        specialMessage = `🎉 Level ${Math.floor((state.score + 1) / 10)} complete! You are leveling up!`;
         confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
         await playSound('level-up');
       }
+      
+      // Show congratulatory message
+      toast({
+        title: specialMessage || randomMessage,
+        description: `Score: ${state.score + 1}`,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+        position: 'top',
+        variant: 'solid',
+        colorScheme: 'purple',
+      });
+      
       const newProblem = generateProblem(state.difficulty);
       setTimeout(() => {
         dispatch({ type: 'SET_QUESTION', payload: newProblem });
@@ -91,7 +134,7 @@ const GameScreen: React.FC = () => {
       setTimeout(() => setAnswerStatus('idle'), 600);
       setTimeout(() => setHeartAnim(false), 600);
     }
-  }, [state.currentQuestion, state.score, state.lives, state.difficulty, dispatch]);
+  }, [state.currentQuestion, state.score, state.lives, state.difficulty, dispatch, toast]);
 
   const handleRevival = async () => {
     setIsAdLoading(true);
@@ -132,6 +175,10 @@ const GameScreen: React.FC = () => {
 
   const handleGameOver = () => {
     setIsRevivalModalOpen(false);
+    // Add current score to total score before game over
+    if (state.score > 0) {
+      dispatch({ type: 'ADD_TO_TOTAL_SCORE', payload: state.score });
+    }
     playSound('game-over');
     navigate('/game-over');
   };

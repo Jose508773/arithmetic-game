@@ -7,7 +7,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useGame } from '../context/GameContext';
+import { useGame } from '../context/useGame';
 
 export const Achievements: React.FC = () => {
   const { state } = useGame();

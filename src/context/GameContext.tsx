@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
-import { GameState, GameContextType, GameAction, Achievement } from '../types/index';
+import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
+import { GameState, GameContextType, GameAction, Achievement, ShopItem } from '../types/index';
 
 const initialAchievements: Achievement[] = [
   {
@@ -22,6 +22,69 @@ const initialAchievements: Achievement[] = [
   }
 ];
 
+const initialShopItems: ShopItem[] = [
+  {
+    id: 'extra_life',
+    name: 'Extra Life',
+    description: 'Start with 4 lives instead of 3',
+    price: 200,
+    icon: '💖',
+    category: 'powerup',
+    effect: 'Start with +1 life',
+    purchased: false
+  },
+  {
+    id: 'double_points',
+    name: 'Double Points',
+    description: 'Earn double points for 30 seconds',
+    price: 500,
+    icon: '⭐',
+    category: 'powerup',
+    effect: '2x points for 30s',
+    purchased: false
+  },
+  {
+    id: 'time_freeze',
+    name: 'Time Freeze',
+    description: 'Freeze the timer for 15 seconds',
+    price: 300,
+    icon: '⏰',
+    category: 'powerup',
+    effect: 'Freeze timer 15s',
+    purchased: false
+  },
+  {
+    id: 'rainbow_theme',
+    name: 'Rainbow Theme',
+    description: 'Unlock a colorful rainbow theme',
+    price: 800,
+    icon: '🌈',
+    category: 'cosmetic',
+    effect: 'Rainbow colors',
+    purchased: false
+  },
+  {
+    id: 'golden_star',
+    name: 'Golden Star',
+    description: 'Special golden star effects',
+    price: 600,
+    icon: '🌟',
+    category: 'cosmetic',
+    effect: 'Golden effects',
+    purchased: false
+  },
+  {
+    id: 'bonus_coins',
+    name: 'Bonus Coins',
+    description: 'Earn 10% more total score',
+    price: 1200,
+    icon: '💰',
+    category: 'bonus',
+    effect: '+10% total score',
+    purchased: false
+  }
+];
+
 // Load high score from localStorage
 const loadHighScore = (): number => {
   try {
@@ -36,6 +99,41 @@ const loadHighScore = (): number => {
   }
 };
 
+// Load total score from localStorage
+const loadTotalScore = (): number => {
+  try {
+    if (typeof window !== 'undefined') {
+      const savedTotalScore = localStorage.getItem('gameTotalScore');
+      return savedTotalScore ? parseInt(savedTotalScore, 10) : 0;
+    }
+    return 0;
+  } catch (error) {
+    console.error('Error loading total score:', error);
+    return 0;
+  }
+};
+
+// Load shop items from localStorage
+const loadShopItems = (): ShopItem[] => {
+  try {
+    if (typeof window !== 'undefined') {
+      const savedShopItems = localStorage.getItem('gameShopItems');
+      if (savedShopItems) {
+        const parsed = JSON.parse(savedShopItems);
+        // Merge with initial items to ensure all items exist
+        return initialShopItems.map(item => {
+          const saved = parsed.find((savedItem: ShopItem) => savedItem.id === item.id);
+          return saved ? { ...item, ...saved } : item;
+        });
+      }
+    }
+    return initialShopItems;
+  } catch (error) {
+    console.error('Error loading shop items:', error);
+    return initialShopItems;
+  }
+};
+
 // Save high score to localStorage
 const saveHighScore = (highScore: number): void => {
   try {
@@ -47,10 +145,33 @@ const saveHighScore = (highScore: number): void => {
   }
 };
 
+// Save total score to localStorage
+const saveTotalScore = (totalScore: number): void => {
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gameTotalScore', totalScore.toString());
+    }
+  } catch (error) {
+    console.error('Error saving total score:', error);
+  }
+};
+
+// Save shop items to localStorage
+const saveShopItems = (shopItems: ShopItem[]): void => {
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gameShopItems', JSON.stringify(shopItems));
+    }
+  } catch (error) {
+    console.error('Error saving shop items:', error);
+  }
+};
+
 const initialState: GameState = {
   score: 0,
   lives: 3,
   highScore: loadHighScore(),
+  totalScore: loadTotalScore(),
   difficulty: 'easy',
   soundEnabled: true,
   musicEnabled: true,
@@ -61,10 +182,13 @@ const initialState: GameState = {
   achievements: initialAchievements,
   playerName: '',
   playerAvatar: '',
-  theme: 'space'
+  theme: 'space',
+  shopItems: loadShopItems()
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
+
+export { GameContext };
 
 const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
@@ -101,6 +225,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         isGameOver: false,
         // Preserve these values
         highScore: state.highScore,
+        totalScore: state.totalScore,
         difficulty: state.difficulty,
         soundEnabled: state.soundEnabled,
         musicEnabled: state.musicEnabled,
@@ -108,7 +233,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         achievements: state.achievements,
         playerName: state.playerName,
         playerAvatar: state.playerAvatar,
-        theme: state.theme
+        theme: state.theme,
+        shopItems: state.shopItems
       };
     case 'SET_DIFFICULTY':
       return {
@@ -174,6 +300,44 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         lives: 3,
         isGameOver: false
       };
+    case 'ADD_TO_TOTAL_SCORE': {
+      const newTotalScore = state.totalScore + action.payload;
+      saveTotalScore(newTotalScore);
+      return {
+        ...state,
+        totalScore: newTotalScore
+      };
+    }
+    case 'PURCHASE_ITEM': {
+      const item = state.shopItems.find(item => item.id === action.payload);
+      if (!item || item.purchased || state.totalScore < item.price) {
+        return state;
+      }
+      
+      const newTotalScore = state.totalScore - item.price;
+      const updatedShopItems = state.shopItems.map(shopItem =>
+        shopItem.id === action.payload
+          ? { ...shopItem, purchased: true }
+          : shopItem
+      );
+      
+      saveTotalScore(newTotalScore);
+      saveShopItems(updatedShopItems);
+      
+      return {
+        ...state,
+        totalScore: newTotalScore,
+        shopItems: updatedShopItems
+      };
+    }
+    case 'RESET_SHOP': {
+      const resetShopItems = state.shopItems.map(item => ({ ...item, purchased: false }));
+      saveShopItems(resetShopItems);
+      return {
+        ...state,
+        shopItems: resetShopItems
+      };
+    }
     default:
       return state;
   }
@@ -207,12 +371,4 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       {children}
     </GameContext.Provider>
   );
-};
-
-export function useGame() {
-  const context = useContext(GameContext);
-  if (context === undefined) {
-    throw new Error('useGame must be used within a GameProvider');
-  }
-  return context;
-} 
+}; 

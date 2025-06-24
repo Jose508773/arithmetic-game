@@ -14,7 +14,7 @@ import {
   Select
 } from '@chakra-ui/react';
 import { FaPlay, FaStar } from 'react-icons/fa';
-import { useGame } from '../context/GameContext';
+import { useGame } from '../context/useGame';
 
 interface Theme {
   value: string;

@@ -15,10 +15,22 @@ export interface Achievement {
   unlocked: boolean;
 }
 
+export interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  icon: string;
+  category: 'powerup' | 'cosmetic' | 'bonus';
+  effect?: string;
+  purchased: boolean;
+}
+
 export interface GameState {
   score: number;
   lives: number;
   highScore: number;
+  totalScore: number; // Accumulated score from all games
   difficulty: 'easy' | 'medium' | 'hard';
   soundEnabled: boolean;
   musicEnabled: boolean;
@@ -30,6 +42,7 @@ export interface GameState {
   playerName: string;
   playerAvatar: string;
   theme: string;
+  shopItems: ShopItem[];
 }
 
 export type GameAction =
@@ -48,7 +61,10 @@ export type GameAction =
   | { type: 'SET_PLAYER_NAME'; payload: string }
   | { type: 'SET_PLAYER_AVATAR'; payload: string }
   | { type: 'SET_THEME'; payload: string }
-  | { type: 'REVIVE_PLAYER' };
+  | { type: 'REVIVE_PLAYER' }
+  | { type: 'ADD_TO_TOTAL_SCORE'; payload: number }
+  | { type: 'PURCHASE_ITEM'; payload: string }
+  | { type: 'RESET_SHOP' };
 
 export interface GameContextType {
   state: GameState;
