@@ -25,8 +25,11 @@ const initialAchievements: Achievement[] = [
 // Load high score from localStorage
 const loadHighScore = (): number => {
   try {
-    const savedHighScore = localStorage.getItem('gameHighScore');
-    return savedHighScore ? parseInt(savedHighScore, 10) : 0;
+    if (typeof window !== 'undefined') {
+      const savedHighScore = localStorage.getItem('gameHighScore');
+      return savedHighScore ? parseInt(savedHighScore, 10) : 0;
+    }
+    return 0;
   } catch (error) {
     console.error('Error loading high score:', error);
     return 0;
@@ -36,7 +39,9 @@ const loadHighScore = (): number => {
 // Save high score to localStorage
 const saveHighScore = (highScore: number): void => {
   try {
-    localStorage.setItem('gameHighScore', highScore.toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gameHighScore', highScore.toString());
+    }
   } catch (error) {
     console.error('Error saving high score:', error);
   }
@@ -88,13 +93,22 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     }
     case 'RESET_GAME':
       return {
-        ...initialState,
+        ...state,
+        score: 0,
+        lives: 3,
+        currentQuestion: null,
+        level: 1,
+        isGameOver: false,
+        // Preserve these values
         highScore: state.highScore,
         difficulty: state.difficulty,
         soundEnabled: state.soundEnabled,
         musicEnabled: state.musicEnabled,
         vibrationEnabled: state.vibrationEnabled,
-        achievements: state.achievements
+        achievements: state.achievements,
+        playerName: state.playerName,
+        playerAvatar: state.playerAvatar,
+        theme: state.theme
       };
     case 'SET_DIFFICULTY':
       return {
@@ -171,15 +185,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Load player name and avatar from localStorage on mount
   useEffect(() => {
     try {
-      const savedPlayerName = localStorage.getItem('playerNickname');
-      const savedPlayerAvatar = localStorage.getItem('playerAvatar');
-      
-      if (savedPlayerName) {
-        dispatch({ type: 'SET_PLAYER_NAME', payload: savedPlayerName });
-      }
-      
-      if (savedPlayerAvatar) {
-        dispatch({ type: 'SET_PLAYER_AVATAR', payload: savedPlayerAvatar });
+      if (typeof window !== 'undefined') {
+        const savedPlayerName = localStorage.getItem('playerNickname');
+        const savedPlayerAvatar = localStorage.getItem('playerAvatar');
+        
+        if (savedPlayerName) {
+          dispatch({ type: 'SET_PLAYER_NAME', payload: savedPlayerName });
+        }
+        
+        if (savedPlayerAvatar) {
+          dispatch({ type: 'SET_PLAYER_AVATAR', payload: savedPlayerAvatar });
+        }
       }
     } catch (error) {
       console.error('Error loading player data:', error);
