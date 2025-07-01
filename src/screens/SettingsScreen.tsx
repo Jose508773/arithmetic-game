@@ -366,7 +366,7 @@ const SettingsScreen: React.FC = () => {
             display="flex"
             alignItems="center"
             gap={2}
-            fontFamily="'Comic Sans MS', cursive"
+            fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
             textShadow="0 0 10px rgba(155, 77, 202, 0.5)"
           >
             <FaCog />
@@ -415,7 +415,7 @@ const SettingsScreen: React.FC = () => {
           >
             <VStack spacing={6} align="stretch" position="relative" zIndex={1}>
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
-                <FormLabel htmlFor="sound-toggle" mb="0" color="space.star" fontFamily="'Comic Sans MS', cursive">
+                <FormLabel htmlFor="sound-toggle" mb="0" color="space.star" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
                   Sound Effects
                 </FormLabel>
                 <Switch
@@ -427,7 +427,7 @@ const SettingsScreen: React.FC = () => {
                 />
               </FormControl>
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
-                <FormLabel htmlFor="music-toggle" mb="0" color="space.star" fontFamily="'Comic Sans MS', cursive">
+                <FormLabel htmlFor="music-toggle" mb="0" color="space.star" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
                   Background Music
                 </FormLabel>
                 <Switch
@@ -510,7 +510,7 @@ const SettingsScreen: React.FC = () => {
           >
             <AlertDialogHeader
               color="space.star"
-              fontFamily="'Comic Sans MS', cursive"
+              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
             >
               Reset All Progress?
             </AlertDialogHeader>

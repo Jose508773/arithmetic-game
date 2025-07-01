@@ -87,7 +87,7 @@ const LandingPage: React.FC = () => {
                 placeholder="Enter your name..."
                 value={playerName}
                 onChange={handleNameChange}
-                fontFamily="'Comic Sans MS', cursive"
+                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                 fontSize="lg"
                 textAlign="center"
                 bg="yellow.50"
@@ -135,7 +135,7 @@ const LandingPage: React.FC = () => {
                 w="full"
                 onClick={handleStart}
                 isDisabled={!playerName.trim()}
-                fontFamily="'Comic Sans MS', cursive"
+                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
               >
                 Start Game
               </Button>

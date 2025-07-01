@@ -405,7 +405,7 @@ const TitleScreen: React.FC = () => {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 textAlign: 'center',
-                fontFamily: 'Comic Sans MS, cursive',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
                 letterSpacing: '0.1em',
                 fontWeight: 'bold',
                 margin: 0,
@@ -418,7 +418,7 @@ const TitleScreen: React.FC = () => {
               fontSize="md"
               color="space.comet"
               textAlign="center"
-              fontFamily="'Comic Sans MS', cursive"
+              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
             >
               Let's explore the universe of numbers! 🚀✨
             </Text>
@@ -439,7 +439,7 @@ const TitleScreen: React.FC = () => {
                 fontSize="xs"
                 color="space.comet"
                 textAlign="center"
-                fontFamily="'Comic Sans MS', cursive"
+                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                 bg="space.deep"
                 p={1}
                 rounded="md"
@@ -523,7 +523,7 @@ const TitleScreen: React.FC = () => {
                   size="sm"
                   mb={2}
                   color="space.comet"
-                  fontFamily="'Comic Sans MS', cursive"
+                  fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                 >
                   How to Play:
                 </Heading>
@@ -590,7 +590,7 @@ const TitleScreen: React.FC = () => {
                   size="sm"
                   mb={2}
                   color="space.comet"
-                  fontFamily="'Comic Sans MS', cursive"
+                  fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                 >
                   Choose Your Level:
                 </Heading>
@@ -774,7 +774,7 @@ const TitleScreen: React.FC = () => {
               <Heading
                 size="md"
                 color="space.star"
-                fontFamily="'Comic Sans MS', cursive"
+                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                 textShadow="0 0 10px rgba(155, 77, 202, 0.5)"
               >
                 🚀 Game Features
@@ -883,7 +883,7 @@ const TitleScreen: React.FC = () => {
               <Heading
                 size="md"
                 color="space.star"
-                fontFamily="'Comic Sans MS', cursive"
+                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                 textShadow="0 0 10px rgba(155, 77, 202, 0.5)"
               >
                 💡 Pro Tips
@@ -944,7 +944,7 @@ const TitleScreen: React.FC = () => {
         >
           <ModalHeader
             color="space.star"
-            fontFamily="'Comic Sans MS', cursive"
+            fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
             textAlign="center"
             fontSize="2xl"
             textShadow="0 0 10px rgba(155, 77, 202, 0.5)"
@@ -969,7 +969,7 @@ const TitleScreen: React.FC = () => {
                 color="space.star"
                 _hover={{ borderColor: "space.comet" }}
                 _focus={{ borderColor: "space.star", boxShadow: "0 0 0 1px var(--chakra-colors-space-star)" }}
-                fontFamily="'Comic Sans MS', cursive"
+                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
               />
             </VStack>
           </ModalBody>

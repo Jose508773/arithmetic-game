@@ -311,7 +311,7 @@ const GameOverScreen: React.FC = () => {
               bgGradient="linear(to-r, space.nebula, space.comet, space.star)"
               bgClip="text"
               textAlign="center"
-              fontFamily="'Comic Sans MS', cursive"
+              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
               textShadow="0 0 10px rgba(155, 77, 202, 0.5)"
             >
               Game Over!
@@ -320,7 +320,7 @@ const GameOverScreen: React.FC = () => {
               fontSize="lg"
               color="space.comet"
               textAlign="center"
-              fontFamily="'Comic Sans MS', cursive"
+              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
             >
               Don't worry, you can try again! 🚀✨
             </Text>

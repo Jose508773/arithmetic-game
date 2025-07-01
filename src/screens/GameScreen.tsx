@@ -527,7 +527,7 @@ const GameScreen: React.FC = () => {
               fontSize="2xl"
               fontWeight="bold"
               color="space.star"
-              fontFamily="'Comic Sans MS', cursive"
+              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
               letterSpacing="wider"
               textShadow="2px 2px 0 rgba(155, 77, 202, 0.3)"
             >
@@ -549,7 +549,7 @@ const GameScreen: React.FC = () => {
             <img src={state.playerAvatar} alt="avatar" style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid space.nebula', background: 'space.deep' }} />
           )}
           {state.playerName && (
-            <Text fontSize="lg" color="space.star" fontFamily="'Comic Sans MS', cursive" fontWeight="bold">
+            <Text fontSize="lg" color="space.star" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" fontWeight="bold">
               {state.playerName}
             </Text>
           )}
@@ -615,7 +615,7 @@ const GameScreen: React.FC = () => {
               <FaStar />
             </Box>
           )}
-          <Text fontSize="3xl" fontWeight="bold" mb={6} fontFamily="'Comic Sans MS', cursive" color="space.star" textShadow="2px 2px 0 rgba(155, 77, 202, 0.3)">
+          <Text fontSize="3xl" fontWeight="bold" mb={6} fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" color="space.star" textShadow="2px 2px 0 rgba(155, 77, 202, 0.3)">
             {state.currentQuestion.question}
           </Text>
           <VStack spacing={3}>
@@ -630,7 +630,7 @@ const GameScreen: React.FC = () => {
                   w="full"
                   colorScheme="purple"
                   bgGradient="linear(to-r, space.nebula, space.cosmic)"
-                  fontFamily="'Comic Sans MS', cursive"
+                  fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                   fontSize="xl"
                   borderRadius="2xl"
                   boxShadow="xl"
@@ -682,7 +682,7 @@ const GameScreen: React.FC = () => {
         >
           <ModalHeader
             color="space.star"
-            fontFamily="'Comic Sans MS', cursive"
+            fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
             textAlign="center"
             fontSize="2xl"
             textShadow="0 0 10px rgba(155, 77, 202, 0.5)"

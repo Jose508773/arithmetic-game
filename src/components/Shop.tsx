@@ -145,7 +145,7 @@ export const Shop: React.FC<ShopProps> = ({ isOpen, onClose }) => {
         >
         <ModalHeader
           color="space.star"
-          fontFamily="'Comic Sans MS', cursive"
+          fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
           textAlign="center"
           fontSize="2xl"
           textShadow="0 0 10px rgba(155, 77, 202, 0.5)"
@@ -212,7 +212,7 @@ export const Shop: React.FC<ShopProps> = ({ isOpen, onClose }) => {
                             fontSize="lg"
                             fontWeight="bold"
                             color="space.star"
-                            fontFamily="'Comic Sans MS', cursive"
+                            fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                           >
                             {item.name}
                           </Text>
@@ -272,7 +272,7 @@ export const Shop: React.FC<ShopProps> = ({ isOpen, onClose }) => {
                       onClick={() => handlePurchase(item)}
                       isDisabled={item.purchased}
                       leftIcon={item.purchased ? <FaCheck /> : <FaLock />}
-                      fontFamily="'Comic Sans MS', cursive"
+                      fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                       transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                       style={{
                         transformStyle: 'preserve-3d',
