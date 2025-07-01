@@ -4,12 +4,55 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="An exciting arithmetic game with space theme - practice math skills with fun animations and sound effects" />
+    <meta name="keywords" content="arithmetic, math game, educational, space theme, interactive" />
+    <meta name="author" content="Arithmetic Game" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/main.tsx" as="script" />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Performance optimizations -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="#0c0c0c" />
+    
     <title>Arithmetic Game</title>
     <style>
       html, body, #root {
         height: 100%;
         margin: 0;
-        overflow: hidden;
+        overflow-x: hidden; /* Allow vertical scrolling, prevent horizontal */
+      }
+      
+      /* Critical CSS for loading screen */
+      .loading-screen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 1.2rem;
+      }
+      
+      /* Optimize font loading */
+      body {
+        font-display: swap;
+      }
+      
+      /* Ensure proper scrolling behavior */
+      html {
+        scroll-behavior: smooth;
+      }
+      
+      /* Prevent horizontal scroll on mobile */
+      body {
+        overflow-x: hidden;
+        width: 100%;
       }
     </style>
   </head>

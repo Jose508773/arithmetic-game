@@ -118,21 +118,46 @@ const initializeSounds = async (): Promise<void> => {
   try {
     initializeAudioContext();
     
-    const loadPromises = Object.entries(soundConfig).map(([key, config]) => {
-      return loadSound(key, config).catch(error => {
-        console.error(`Failed to load sound ${key}:`, error);
-        return Promise.resolve();
-      });
-    });
+    // Load sounds in batches to avoid overwhelming the browser
+    const soundEntries = Object.entries(soundConfig);
+    const batchSize = 2;
     
-    await Promise.allSettled(loadPromises);
+    for (let i = 0; i < soundEntries.length; i += batchSize) {
+      const batch = soundEntries.slice(i, i + batchSize);
+      const loadPromises = batch.map(([key, config]) => {
+        return loadSound(key, config).catch(error => {
+          console.error(`Failed to load sound ${key}:`, error);
+          return Promise.resolve();
+        });
+      });
+      
+      await Promise.allSettled(loadPromises);
+      
+      // Small delay between batches to prevent blocking
+      if (i + batchSize < soundEntries.length) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+    }
   } catch (error) {
     console.error('Failed to initialize sound system:', error);
   }
 };
 
-// Initialize sounds on module load
-initializeSounds();
+// Lazy initialization - only initialize when needed
+let soundsInitialized = false;
+let initializationPromise: Promise<void> | null = null;
+
+const ensureSoundsInitialized = async (): Promise<void> => {
+  if (soundsInitialized) return;
+  
+  if (!initializationPromise) {
+    initializationPromise = initializeSounds().then(() => {
+      soundsInitialized = true;
+    });
+  }
+  
+  return initializationPromise;
+};
 
 export const setSoundEnabled = (enabled: boolean): void => {
   soundEnabled = enabled;
@@ -149,13 +174,14 @@ export const setSoundEnabled = (enabled: boolean): void => {
 
 export const playSound = async (sound: SoundKey): Promise<void> => {
   try {
+    await ensureSoundsInitialized();
+    await unlockAudioContext();
+
     const soundInstance = sounds[sound];
     if (!soundInstance) {
       console.warn(`Sound ${sound} is not available`);
       return;
     }
-
-    await unlockAudioContext();
 
     if (soundEnabled) {
       soundInstance.play();

@@ -1,0 +1,67 @@
+{
+  "name": "Arithmetic Game",
+  "short_name": "MathGame",
+  "description": "An exciting arithmetic game with space theme - practice math skills with fun animations and sound effects",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0c0c",
+  "theme_color": "#0c0c0c",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "games", "puzzle"],
+  "icons": [
+    {
+      "src": "/public/avatars/avatar1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/public/avatars/avatar2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/public/avatars/avatar3.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/public/avatars/avatar4.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start New Game",
+      "short_name": "Play",
+      "description": "Start a new arithmetic game",
+      "url": "/game",
+      "icons": [
+        {
+          "src": "/public/avatars/avatar1.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Configure game settings",
+      "url": "/settings",
+      "icons": [
+        {
+          "src": "/public/avatars/avatar2.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+} 

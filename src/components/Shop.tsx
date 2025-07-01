@@ -1,4 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { keyframes } from '@emotion/react';
+
+// Enhanced 3D floating animation keyframes
+const glow = keyframes`
+  0% { box-shadow: 0 0 5px rgba(155, 77, 202, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(155, 77, 202, 0.8), 0 0 30px rgba(0, 255, 255, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(155, 77, 202, 0.3); }
+`;
+
+const nebula = keyframes`
+  0% { background-position: 0% 50%; opacity: 0.3; }
+  50% { background-position: 100% 50%; opacity: 0.7; }
+  100% { background-position: 0% 50%; opacity: 0.3; }
+`;
 import {
   Box,
   VStack,
@@ -19,7 +33,7 @@ import {
 import { FaStore, FaCoins, FaCheck, FaLock } from 'react-icons/fa';
 import { useGame } from '../context/useGame';
 import { ShopItem } from '../types/index';
-import { playSound } from '../utils/soundEffects';
+import { playSound, setSoundEnabled } from '../utils/soundEffects';
 
 interface ShopProps {
   isOpen: boolean;
@@ -29,6 +43,11 @@ interface ShopProps {
 export const Shop: React.FC<ShopProps> = ({ isOpen, onClose }) => {
   const { state, dispatch } = useGame();
   const toast = useToast();
+
+  // Sync sound toggles with sound effects module
+  useEffect(() => {
+    setSoundEnabled(state.soundEnabled);
+  }, [state.soundEnabled]);
 
   const handlePurchase = async (item: ShopItem) => {
     if (item.purchased) {
@@ -86,25 +105,44 @@ export const Shop: React.FC<ShopProps> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
       <ModalOverlay backdropFilter="blur(10px)" />
-      <ModalContent
-        bg="space.deep"
-        borderWidth="2px"
-        borderColor="space.nebula"
-        rounded="3xl"
-        maxH="80vh"
-        overflow="hidden"
-        position="relative"
-        _before={{
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at center, rgba(155, 77, 202, 0.1) 0%, transparent 70%)',
-          zIndex: 0,
-        }}
-      >
+              <ModalContent
+          bg="space.deep"
+          borderWidth="2px"
+          borderColor="space.nebula"
+          rounded="3xl"
+          maxH="80vh"
+          overflow="hidden"
+          position="relative"
+          animation={`${glow} 4s ease-in-out infinite`}
+          style={{
+            transformStyle: 'preserve-3d',
+            perspective: '1000px'
+          }}
+          _before={{
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at center, rgba(155, 77, 202, 0.15) 0%, transparent 70%)',
+            zIndex: 0,
+            animation: `${nebula} 8s ease-in-out infinite`
+          }}
+          _after={{
+            content: '""',
+            position: 'absolute',
+            top: '-2px',
+            left: '-2px',
+            right: '-2px',
+            bottom: '-2px',
+            background: 'linear-gradient(45deg, rgba(155, 77, 202, 0.3), rgba(0, 255, 255, 0.3), rgba(255, 215, 0, 0.3))',
+            borderRadius: '3xl',
+            zIndex: -1,
+            filter: 'blur(8px)',
+            opacity: 0.4
+          }}
+        >
         <ModalHeader
           color="space.star"
           fontFamily="'Comic Sans MS', cursive"
@@ -223,12 +261,27 @@ export const Shop: React.FC<ShopProps> = ({ isOpen, onClose }) => {
                         bgGradient: item.purchased
                           ? "linear(to-r, green.500, green.400)"
                           : "linear(to-r, space.cosmic, space.nebula)",
-                        transform: "scale(1.05)",
+                        transform: "translateY(-2px) scale(1.05)",
+                        boxShadow: item.purchased
+                          ? "0 8px 20px rgba(34, 197, 94, 0.4), 0 0 15px rgba(0, 255, 0, 0.3)"
+                          : "0 8px 20px rgba(155, 77, 202, 0.4), 0 0 15px rgba(0, 255, 255, 0.3)"
+                      }}
+                      _active={{
+                        transform: "translateY(0px) scale(0.98)"
                       }}
                       onClick={() => handlePurchase(item)}
                       isDisabled={item.purchased}
                       leftIcon={item.purchased ? <FaCheck /> : <FaLock />}
                       fontFamily="'Comic Sans MS', cursive"
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                      style={{
+                        transformStyle: 'preserve-3d',
+                        perspective: '1000px'
+                      }}
+                      boxShadow={item.purchased 
+                        ? "0 4px 12px rgba(34, 197, 94, 0.2)"
+                        : "0 4px 12px rgba(155, 77, 202, 0.2)"
+                      }
                     >
                       {item.purchased ? "Owned" : "Buy"}
                     </Button>

@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useReducer, useEffect, ReactNode, useMemo } from 'react';
 import { GameState, GameContextType, GameAction, Achievement, ShopItem } from '../types/index';
 import { getUserData, setUserData } from '../utils/userSession';
 
@@ -350,8 +350,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+
   return (
-    <GameContext.Provider value={{ state, dispatch }}>
+    <GameContext.Provider value={contextValue}>
       {children}
     </GameContext.Provider>
   );
