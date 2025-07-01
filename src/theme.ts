@@ -25,8 +25,8 @@ const theme = extendTheme({
     },
   },
   fonts: {
-    heading: '"Comic Sans MS", cursive',
-    body: '"Comic Sans MS", cursive',
+    heading: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    body: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   },
   components: {
     Button: {
@@ -83,6 +83,23 @@ const theme = extendTheme({
         bg: 'space.dark',
         color: 'white',
         backgroundImage: 'radial-gradient(circle at center, #1A1B3D 0%, #0B0B1F 100%)',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale',
+      },
+      // Mobile font optimizations
+      '@media (max-width: 768px)': {
+        body: {
+          fontSize: '16px',
+          lineHeight: '1.5',
+        },
+        'h1, h2, h3, h4, h5, h6': {
+          fontWeight: '600',
+          lineHeight: '1.2',
+        },
+        'button, input, textarea': {
+          fontSize: '16px',
+        },
       },
     },
   },
