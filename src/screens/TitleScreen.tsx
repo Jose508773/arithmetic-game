@@ -84,6 +84,7 @@ const TitleScreen: React.FC = () => {
   const { isOpen: isShopOpen, onOpen: onShopOpen, onClose: onShopClose } = useDisclosure();
   const [nickname, setNickname] = useState<string>(playerName || '');
   const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [activeTab, setActiveTab] = useState<'game' | 'learn' | 'practice'>('game');
 
   // Initialize audio context on component mount
   useEffect(() => {
@@ -98,86 +99,163 @@ const TitleScreen: React.FC = () => {
 
   // Function to unlock audio with user interaction
   const unlockAudioWithInteraction = async () => {
-    console.log('🔓 Unlocking audio with user interaction...');
-    setAudioUnlocked(true);
-    
     try {
       await unlockAudio();
-      
-      // Test sound immediately after user interaction
-      setTimeout(async () => {
-        console.log('🔊 Testing sound after user interaction...');
-        await playSound('button-click');
-      }, 100);
+      setAudioUnlocked(true);
+      console.log('✅ Audio unlocked successfully!');
     } catch (error) {
-      console.error('❌ Error unlocking audio:', error);
+      console.error('❌ Failed to unlock audio:', error);
     }
   };
 
   const handleStartGame = async () => {
-    console.log('🎮 Starting game...');
-    if (!audioUnlocked) {
+    try {
       await unlockAudioWithInteraction();
+      playSound('button-click');
+      setTimeout(() => {
+        navigate('/game');
+      }, 200);
+    } catch (error) {
+      console.error('Error starting game:', error);
+      navigate('/game');
     }
-    await playSound('button-click');
-    if (!playerName) {
-      onOpen(); // Open modal if no nickname is set
-      return;
-    }
-    navigate('/game');
   };
 
   const handleSettings = async () => {
-    console.log('⚙️ Opening settings...');
-    if (!audioUnlocked) {
+    try {
       await unlockAudioWithInteraction();
+      playSound('button-click');
+      setTimeout(() => {
+        navigate('/settings');
+      }, 200);
+    } catch (error) {
+      console.error('Error navigating to settings:', error);
+      navigate('/settings');
     }
-    await playSound('button-click');
-    navigate('/settings');
   };
 
   const handleNicknameSubmit = async () => {
-    if (nickname.trim()) {
-      console.log('👤 Setting nickname...');
-      if (!audioUnlocked) {
-        await unlockAudioWithInteraction();
-      }
-      await playSound('button-click');
-      dispatch({ type: 'SET_PLAYER_NAME', payload: nickname.trim() });
+    try {
+      await unlockAudioWithInteraction();
+      playSound('button-click');
+      dispatch({ type: 'SET_PLAYER_NAME', payload: nickname });
       onClose();
-      setNickname('');
+    } catch (error) {
+      console.error('Error submitting nickname:', error);
+      dispatch({ type: 'SET_PLAYER_NAME', payload: nickname });
+      onClose();
     }
   };
 
   const handleOpenModal = async () => {
-    console.log('📝 Opening nickname modal...');
-    if (!audioUnlocked) {
+    try {
       await unlockAudioWithInteraction();
+      playSound('button-click');
+      onOpen();
+    } catch (error) {
+      console.error('Error opening modal:', error);
+      onOpen();
     }
-    await playSound('button-click');
-    onOpen();
   };
 
   const handleTestSounds = async () => {
-    console.log('🔊 Testing all sounds...');
-    if (!audioUnlocked) {
+    try {
       await unlockAudioWithInteraction();
+      playSound('correct');
+      setTimeout(() => playSound('wrong'), 500);
+      setTimeout(() => playSound('level-up'), 1000);
+    } catch (error) {
+      console.error('Error testing sounds:', error);
     }
-    
-    // Test sounds with delays
-    await playSound('button-click');
-    setTimeout(async () => await playSound('achievement'), 500);
-    setTimeout(async () => await playSound('level-up'), 1000);
   };
 
   const handleShop = async () => {
-    console.log('🛒 Opening shop...');
-    if (!audioUnlocked) {
+    try {
       await unlockAudioWithInteraction();
+      playSound('button-click');
+      onShopOpen();
+    } catch (error) {
+      console.error('Error opening shop:', error);
+      onShopOpen();
     }
-    await playSound('button-click');
-    onShopOpen();
   };
+
+  const mathTutorials = [
+    {
+      title: "Addition Fundamentals",
+      content: "Addition is the process of combining two or more numbers to find their total. Start with simple numbers and work your way up. Remember: 2 + 3 = 5, 7 + 8 = 15. Practice with single digits first, then move to double digits.",
+      tips: ["Use your fingers to count", "Break down large numbers", "Practice mental math daily"]
+    },
+    {
+      title: "Subtraction Strategies",
+      content: "Subtraction finds the difference between numbers. For 15 - 7, think 'what number plus 7 equals 15?' The answer is 8. For larger numbers, use the borrowing method or break them down into smaller problems.",
+      tips: ["Count backwards", "Use addition to check", "Practice with money examples"]
+    },
+    {
+      title: "Multiplication Mastery",
+      content: "Multiplication is repeated addition. 4 × 3 means 4 + 4 + 4 = 12. Learn your times tables from 1-12. Start with easy ones: 2×, 5×, 10×, then tackle the harder ones like 7× and 8×.",
+      tips: ["Learn patterns (2× doubles numbers)", "Use skip counting", "Practice with real objects"]
+    },
+    {
+      title: "Division Demystified",
+      content: "Division is the opposite of multiplication. 12 ÷ 3 = 4 because 4 × 3 = 12. Think of division as sharing equally. For 20 ÷ 4, think 'how many groups of 4 make 20?' The answer is 5.",
+      tips: ["Use multiplication to check", "Start with even numbers", "Practice with sharing scenarios"]
+    }
+  ];
+
+  const practiceProblems = [
+    {
+      type: "Addition",
+      problems: [
+        { question: "What is 15 + 27?", answer: 42, explanation: "15 + 27 = (10 + 5) + (20 + 7) = 30 + 12 = 42" },
+        { question: "Calculate 34 + 18", answer: 52, explanation: "34 + 18 = (30 + 10) + (4 + 8) = 40 + 12 = 52" },
+        { question: "Add 56 + 29", answer: 85, explanation: "56 + 29 = (50 + 20) + (6 + 9) = 70 + 15 = 85" }
+      ]
+    },
+    {
+      type: "Subtraction",
+      problems: [
+        { question: "What is 45 - 17?", answer: 28, explanation: "45 - 17 = (40 - 10) + (5 - 7) = 30 - 2 = 28" },
+        { question: "Calculate 63 - 28", answer: 35, explanation: "63 - 28 = (60 - 20) + (3 - 8) = 40 - 5 = 35" },
+        { question: "Subtract 81 - 34", answer: 47, explanation: "81 - 34 = (80 - 30) + (1 - 4) = 50 - 3 = 47" }
+      ]
+    },
+    {
+      type: "Multiplication",
+      problems: [
+        { question: "What is 7 × 8?", answer: 56, explanation: "7 × 8 = 7 groups of 8 = 56" },
+        { question: "Calculate 6 × 9", answer: 54, explanation: "6 × 9 = 6 groups of 9 = 54" },
+        { question: "Multiply 4 × 12", answer: 48, explanation: "4 × 12 = 4 groups of 12 = 48" }
+      ]
+    },
+    {
+      type: "Division",
+      problems: [
+        { question: "What is 48 ÷ 6?", answer: 8, explanation: "48 ÷ 6 = 8 because 8 × 6 = 48" },
+        { question: "Calculate 63 ÷ 7", answer: 9, explanation: "63 ÷ 7 = 9 because 9 × 7 = 63" },
+        { question: "Divide 56 ÷ 8", answer: 7, explanation: "56 ÷ 8 = 7 because 7 × 8 = 56" }
+      ]
+    }
+  ];
+
+  const learningTips = [
+    {
+      title: "Mental Math Techniques",
+      content: "Practice mental math daily. Start with simple calculations and gradually increase difficulty. Use estimation to check your answers quickly."
+    },
+    {
+      title: "Speed Strategies",
+      content: "Learn number patterns and shortcuts. For example, to multiply by 5, multiply by 10 and divide by 2. To multiply by 9, multiply by 10 and subtract the original number."
+    },
+    {
+      title: "Accuracy Methods",
+      content: "Always double-check your work. Use inverse operations to verify: if 15 + 27 = 42, then 42 - 27 should equal 15. Practice with a timer to build speed while maintaining accuracy."
+    },
+    {
+      title: "Problem-Solving Approach",
+      content: "Read problems carefully. Identify what operation is needed. Break complex problems into smaller steps. Check your answer makes sense in context."
+    }
+  ];
 
   useEffect(() => {
     // Load nickname from localStorage on component mount
@@ -517,47 +595,206 @@ const TitleScreen: React.FC = () => {
             </Box>
 
             <VStack spacing={4}>
-              {/* How to Play Section */}
+              {/* Educational Content Tabs */}
               <Box w="full">
                 <Heading
                   size="sm"
-                  mb={2}
+                  mb={3}
                   color="space.comet"
                   fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
                 >
-                  How to Play:
+                  Learn & Practice:
                 </Heading>
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
-                  <VStack align="start" spacing={1}>
-                    <Flex align="center" gap={2}>
-                      <Icon as={FaBrain} color="space.cosmic" />
-                      <Text color="space.star" fontSize="xs">Solve fun math problems!</Text>
-                    </Flex>
-                    <Flex align="center" gap={2}>
-                      <Icon as={FaStar} color="space.star" />
-                      <Text color="space.star" fontSize="xs">Choose the right answer</Text>
-                    </Flex>
-                    <Flex align="flex-start" gap={2}>
-                      <Icon as={FaHeart} color="space.planet" mt={1} />
-                      <Text color="space.star" fontSize="xs">You have 3 lives - 3 wrong answers and it's game over!</Text>
-                    </Flex>
-                  </VStack>
-                  <Box
-                    bg="space.deep"
-                    p={2}
-                    rounded="xl"
-                    borderWidth="2px"
-                    borderColor="space.nebula"
-                    boxShadow="0 0 15px rgba(155, 77, 202, 0.2)"
-                  >
-                    <Text fontWeight="bold" color="space.comet" mb={1} fontSize="xs">
-                      Your Best Score:
-                    </Text>
-                    <Text fontSize="xl" color="space.star" fontWeight="bold">
-                      {highScore} points
-                    </Text>
-                  </Box>
-                </SimpleGrid>
+                
+                {/* Tab Navigation */}
+                <Flex mb={4} gap={1} justify="center">
+                  {[
+                    { id: 'game', label: 'Game', icon: FaPlay },
+                    { id: 'learn', label: 'Learn', icon: FaBrain },
+                    { id: 'practice', label: 'Practice', icon: FaStar }
+                  ].map((tab) => (
+                    <Button
+                      key={tab.id}
+                      size="sm"
+                      variant={activeTab === tab.id ? 'solid' : 'outline'}
+                      onClick={() => setActiveTab(tab.id as any)}
+                      leftIcon={<Icon as={tab.icon} />}
+                      colorScheme="purple"
+                      bg={activeTab === tab.id ? 'space.nebula' : 'transparent'}
+                      color={activeTab === tab.id ? 'white' : 'space.comet'}
+                      borderColor="space.nebula"
+                      _hover={{
+                        bg: activeTab === tab.id ? 'space.cosmic' : 'space.deep',
+                        transform: 'translateY(-2px)'
+                      }}
+                      transition="all 0.3s"
+                      flex={1}
+                      maxW="120px"
+                    >
+                      {tab.label}
+                    </Button>
+                  ))}
+                </Flex>
+
+                {/* Tab Content */}
+                <Box
+                  bg="space.deep"
+                  p={4}
+                  rounded="xl"
+                  borderWidth="2px"
+                  borderColor="space.nebula"
+                  boxShadow="0 0 15px rgba(155, 77, 202, 0.2)"
+                  minH="300px"
+                >
+                  {activeTab === 'game' && (
+                    <VStack spacing={3} align="start">
+                      <Heading size="sm" color="space.comet" mb={2}>
+                        How to Play:
+                      </Heading>
+                      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} w="full">
+                        <VStack align="start" spacing={1}>
+                          <Flex align="center" gap={2}>
+                            <Icon as={FaBrain} color="space.cosmic" />
+                            <Text color="space.star" fontSize="xs">Solve fun math problems!</Text>
+                          </Flex>
+                          <Flex align="center" gap={2}>
+                            <Icon as={FaStar} color="space.star" />
+                            <Text color="space.star" fontSize="xs">Choose the right answer</Text>
+                          </Flex>
+                          <Flex align="flex-start" gap={2}>
+                            <Icon as={FaHeart} color="space.planet" mt={1} />
+                            <Text color="space.star" fontSize="xs">You have 3 lives - 3 wrong answers and it's game over!</Text>
+                          </Flex>
+                        </VStack>
+                        <Box
+                          bg="space.deep"
+                          p={2}
+                          rounded="xl"
+                          borderWidth="2px"
+                          borderColor="space.nebula"
+                          boxShadow="0 0 15px rgba(155, 77, 202, 0.2)"
+                        >
+                          <Text fontWeight="bold" color="space.comet" mb={1} fontSize="xs">
+                            Your Best Score:
+                          </Text>
+                          <Text fontSize="xl" color="space.star" fontWeight="bold">
+                            {highScore} points
+                          </Text>
+                        </Box>
+                      </SimpleGrid>
+                    </VStack>
+                  )}
+
+                  {activeTab === 'learn' && (
+                    <VStack spacing={4} align="start" maxH="400px" overflowY="auto">
+                      <Heading size="sm" color="space.comet" mb={2}>
+                        Math Tutorials:
+                      </Heading>
+                      {mathTutorials.map((tutorial, index) => (
+                        <Box
+                          key={index}
+                          w="full"
+                          p={3}
+                          bg="space.deep"
+                          rounded="lg"
+                          borderWidth="1px"
+                          borderColor="space.nebula"
+                          boxShadow="0 0 10px rgba(155, 77, 202, 0.1)"
+                        >
+                          <Heading size="xs" color="space.star" mb={2}>
+                            {tutorial.title}
+                          </Heading>
+                          <Text fontSize="xs" color="space.comet" mb={2}>
+                            {tutorial.content}
+                          </Text>
+                          <VStack align="start" spacing={1}>
+                            <Text fontSize="xs" color="space.accent" fontWeight="bold">
+                              Tips:
+                            </Text>
+                            {tutorial.tips.map((tip, tipIndex) => (
+                              <Flex key={tipIndex} align="center" gap={2}>
+                                <Icon as={FaStar} color="space.star" fontSize="xs" />
+                                <Text fontSize="xs" color="space.comet">
+                                  {tip}
+                                </Text>
+                              </Flex>
+                            ))}
+                          </VStack>
+                        </Box>
+                      ))}
+                      
+                      <Heading size="sm" color="space.comet" mb={2} mt={4}>
+                        Learning Tips:
+                      </Heading>
+                      {learningTips.map((tip, index) => (
+                        <Box
+                          key={index}
+                          w="full"
+                          p={3}
+                          bg="space.deep"
+                          rounded="lg"
+                          borderWidth="1px"
+                          borderColor="space.nebula"
+                          boxShadow="0 0 10px rgba(155, 77, 202, 0.1)"
+                        >
+                          <Heading size="xs" color="space.star" mb={2}>
+                            {tip.title}
+                          </Heading>
+                          <Text fontSize="xs" color="space.comet">
+                            {tip.content}
+                          </Text>
+                        </Box>
+                      ))}
+                    </VStack>
+                  )}
+
+                  {activeTab === 'practice' && (
+                    <VStack spacing={4} align="start" maxH="400px" overflowY="auto">
+                      <Heading size="sm" color="space.comet" mb={2}>
+                        Practice Problems:
+                      </Heading>
+                      {practiceProblems.map((category, index) => (
+                        <Box
+                          key={index}
+                          w="full"
+                          p={3}
+                          bg="space.deep"
+                          rounded="lg"
+                          borderWidth="1px"
+                          borderColor="space.nebula"
+                          boxShadow="0 0 10px rgba(155, 77, 202, 0.1)"
+                        >
+                          <Heading size="xs" color="space.star" mb={3}>
+                            {category.type}
+                          </Heading>
+                          <VStack spacing={2} align="start">
+                            {category.problems.map((problem, probIndex) => (
+                              <Box
+                                key={probIndex}
+                                w="full"
+                                p={2}
+                                bg="space.deep"
+                                rounded="md"
+                                borderWidth="1px"
+                                borderColor="space.nebula"
+                              >
+                                <Text fontSize="xs" color="space.comet" fontWeight="bold" mb={1}>
+                                  {problem.question}
+                                </Text>
+                                <Text fontSize="xs" color="space.accent" mb={1}>
+                                  Answer: {problem.answer}
+                                </Text>
+                                <Text fontSize="xs" color="space.comet" fontStyle="italic">
+                                  {problem.explanation}
+                                </Text>
+                              </Box>
+                            ))}
+                          </VStack>
+                        </Box>
+                      ))}
+                    </VStack>
+                  )}
+                </Box>
               </Box>
 
               {/* Total Score Display */}
@@ -831,6 +1068,115 @@ const TitleScreen: React.FC = () => {
                     </Text>
                     <Text color="space.star" fontSize="xs">
                       Enjoy a stunning space-themed interface with animations!
+                    </Text>
+                  </Box>
+                </VStack>
+              </SimpleGrid>
+            </VStack>
+          </Box>
+
+          {/* Educational Content Section */}
+          <Box
+            w="full"
+            p={6}
+            bg="space.deep"
+            rounded="3xl"
+            shadow="2xl"
+            borderWidth="2px"
+            borderColor="space.nebula"
+            position="relative"
+            overflow="hidden"
+            animation={`${glow} 5s ease-in-out infinite 2s`}
+            style={{
+              transformStyle: 'preserve-3d',
+              perspective: '1000px'
+            }}
+            _before={{
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(circle at center, rgba(0, 255, 255, 0.15) 0%, transparent 70%)',
+              zIndex: 0,
+              animation: `${nebula} 8s ease-in-out infinite`
+            }}
+            _after={{
+              content: '""',
+              position: 'absolute',
+              top: '-2px',
+              left: '-2px',
+              right: '-2px',
+              bottom: '-2px',
+              background: 'linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(155, 77, 202, 0.3), rgba(255, 215, 0, 0.3))',
+              borderRadius: '3xl',
+              zIndex: -1,
+              filter: 'blur(8px)',
+              opacity: 0.4
+            }}
+          >
+            <VStack spacing={4} position="relative" zIndex={1}>
+              <Heading
+                size="md"
+                color="space.star"
+                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                textShadow="0 0 10px rgba(155, 77, 202, 0.5)"
+              >
+                📚 About Mathematics
+              </Heading>
+              
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="full">
+                <VStack align="start" spacing={3}>
+                  <Box>
+                    <Text color="space.comet" fontWeight="bold" fontSize="sm" mb={1}>
+                      🔢 The Language of Numbers
+                    </Text>
+                    <Text color="space.star" fontSize="xs">
+                      Mathematics is the universal language that helps us understand patterns, solve problems, and make sense of the world around us. From counting stars to calculating rocket trajectories, math is everywhere!
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text color="space.comet" fontWeight="bold" fontSize="sm" mb={1}>
+                      🧮 Why Math Matters
+                    </Text>
+                    <Text color="space.star" fontSize="xs">
+                      Strong math skills are essential for success in science, technology, engineering, finance, and many other fields. They help develop logical thinking and problem-solving abilities.
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text color="space.comet" fontWeight="bold" fontSize="sm" mb={1}>
+                      🎯 Building Blocks
+                    </Text>
+                    <Text color="space.star" fontSize="xs">
+                      Basic arithmetic (addition, subtraction, multiplication, division) forms the foundation for all advanced mathematics. Mastering these fundamentals opens doors to algebra, geometry, and beyond.
+                    </Text>
+                  </Box>
+                </VStack>
+                
+                <VStack align="start" spacing={3}>
+                  <Box>
+                    <Text color="space.comet" fontWeight="bold" fontSize="sm" mb={1}>
+                      🌟 Real-World Applications
+                    </Text>
+                    <Text color="space.star" fontSize="xs">
+                      Math is used in everyday life: calculating change, measuring ingredients, budgeting money, understanding time, and even playing games like this one!
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text color="space.comet" fontWeight="bold" fontSize="sm" mb={1}>
+                      🚀 Space & Math
+                    </Text>
+                    <Text color="space.star" fontSize="xs">
+                      Mathematics is crucial in space exploration: calculating orbits, designing spacecraft, analyzing data from telescopes, and understanding the physics of the universe.
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text color="space.comet" fontWeight="bold" fontSize="sm" mb={1}>
+                      💡 Learning Strategy
+                    </Text>
+                    <Text color="space.star" fontSize="xs">
+                      Practice regularly, start with what you know, build confidence gradually, and don't be afraid to make mistakes - they're part of learning!
                     </Text>
                   </Box>
                 </VStack>
